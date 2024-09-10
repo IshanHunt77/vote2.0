@@ -1,0 +1,98 @@
+/* Set the background color for the entire page */
+.create-poll-page {
+    background-color: rgb(30, 30, 30);
+    color: #ffffff; /* Ensure text is readable on dark background */
+    min-height: 100vh; /* Ensure it takes up the full viewport height */
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  /* Navbar styles */
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: rgb(20, 20, 20); /* Slightly darker for navbar */
+  }
+  
+  .nav-button {
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  .nav-button:hover {
+    background-color: rgb(50, 50, 50);
+  }
+  
+  /* Button to create poll */
+  .create-poll-button {
+    background-color: #ff9933;
+    color: #000000;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .create-poll-button:hover {
+    background-color: #e68a00;
+    transform: scale(1.02);
+  }
+  
+  /* Form container styles */
+  .create-poll-form {
+    background-color: rgb(40, 40, 40);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  .createpoll-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .create-poll-heading {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff9933;
+  }
+  
+  .input {
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 2px solid #ff9933;
+    border-radius: 8px;
+    background-color: rgb(50, 50, 50);
+    color: #ffffff;
+    width: 100%;
+  }
+  
+  .add-option-button, .submit-button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff9933;
+    color: #000000;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    margin-top: 10px;
+  }
+  
+  .add-option-button:hover, .submit-button:hover {
+    background-color: #e68a00;
+    transform: scale(1.02);
+  }
+  
