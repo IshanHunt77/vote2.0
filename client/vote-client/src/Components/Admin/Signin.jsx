@@ -49,7 +49,6 @@ export const Signin = () => {
         container: {
             maxWidth: '400px',
             width: '100%',
-            marginLeft:"550px",
             padding: '40px',
             borderRadius: '12px',
             backgroundColor: '#2b2b2b',

@@ -49,11 +49,14 @@ export const Createpoll = () => {
   return (
     <div className="create-poll-page">
       {/* Navbar */}
-      <div className="navbar">
+      <div className="navbar ">
+        <p>BLOCKVOTE</p>
         <button className="nav-button" onClick={() => navigate('/')}>Home</button>
         <button className="nav-button" onClick={() => navigate('/admin/polls')}>Polls</button>
         <button className="nav-button" onClick={() => navigate('/admin/results')}>Results</button>
         <button className="nav-button" onClick={() => navigate('/about')}>About</button>
+        
+
       </div>
 
       {/* Poll Creation */}

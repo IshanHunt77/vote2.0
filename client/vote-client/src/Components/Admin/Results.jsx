@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import { ABI } from "../ABI";
-import { NameContext } from './NameContext';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useLocation } from "react-router-dom";
 
 export const Results = () => {
-  const [pollId, setPollId] = useState("");
-  const [candidateId, setCandidateId] = useState("");
-  const [results, setResults] = useState(null);
+  const location = useLocation();
+  const { pollId: initialPollId, candidates: initialCandidates } = location.state || {};
+  const [results, setResults] = useState([]);
   const [contractInstance, setContractInstance] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { name } = useContext(NameContext);
-
-  const contractAddress = '0x4934C0043Ab648E985F980b21177Ab261Ed6d4D7'; // Ensure this is correct
+  const [pollId, setPollId] = useState(initialPollId || '');
+  const [candidates, setCandidates] = useState(initialCandidates || []);
+  const contractAddress = '0x4934C0043Ab648E985F980b21177Ab261Ed6d4D7';
 
   useEffect(() => {
     const initWeb3 = async () => {
@@ -33,118 +34,187 @@ export const Results = () => {
     };
 
     initWeb3();
-  }, []); // Empty array ensures it runs once after component mounts
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    if (contractInstance) {
+    if (contractInstance && pollId && candidates.length > 0) {
       try {
-        console.log(pollId);
-        console.log(candidateId);
-        const result = await contractInstance.methods.getAllVotes(pollId, candidateId).call();
-        console.log("Result:", result);
-        setResults(result);  // Store result as it is
+        const results = await Promise.all(
+          candidates.map((_, idx) => contractInstance.methods.getAllVotes(pollId, idx + 1).call())
+        );
+
+        const pollResults = candidates.map((name, idx) => ({
+          name,
+          votes: parseInt(results[idx])
+        }));
+
+        setResults(pollResults);
       } catch (error) {
         setError('Error fetching results.');
         console.error("Error fetching results:", error);
       } finally {
         setLoading(false);
       }
+    } else {
+      setError('Please ensure pollId and candidates are set.');
+      setLoading(false);
     }
   };
 
+  const totalVotes = results ? results.reduce((sum, option) => sum + option.votes, 0) : 0;
+
   return (
-    <div style={styles.container}>
-      {error && <p style={styles.error}>{error}</p>}
-      <form onSubmit={handleSubmit} style={styles.form}>
-        <label style={styles.label}>
-          Poll ID:
-          <input
-            type="text"
-            value={pollId}
-            onChange={(e) => setPollId(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </label>
-        <label style={styles.label}>
-          Candidate ID:
-          <input
-            type="text"
-            value={candidateId}
-            onChange={(e) => setCandidateId(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </label>
-        <button type="submit" disabled={loading} style={styles.button}>
+    <div className="results-container">
+      {error && <p className="error">{error}</p>}
+      <form onSubmit={handleSubmit} className="form">
+        <input 
+          type="text" 
+          value={pollId} 
+          onChange={(e) => setPollId(e.target.value)} 
+          placeholder="Enter Poll ID"
+          className="input-field"
+        />
+        <button type="submit" disabled={loading} className="button">
           {loading ? 'Fetching...' : 'Get Results'}
         </button>
       </form>
-      {results !== null && (
-        <div style={styles.resultsContainer}>
-          <p style={styles.resultsText}>Results: {results.toString()}</p>
+      {results.length > 0 && (
+        <div className="poll-results">
+          <h2 className="poll-question">Poll Results (ID: {pollId})</h2>
+          <div className="options-list">
+            {results.map((option, index) => (
+              <div key={index} className="option-item">
+                <div className="option-content">
+                  <div className="option-header">
+                    <span className="option-text">{option.name}</span>
+                    <span className="vote-count">{option.votes} votes</span>
+                  </div>
+                  <div className="progress-bar-bg">
+                    <div
+                      className="progress-bar-fill"
+                      style={{ width: `${(option.votes / totalVotes * 100) || 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="chart-container">
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={results}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="votes" fill="#4caf50" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
+      <style jsx>{`
+        .results-container {
+          background-color: #1a1a1a;
+          padding: 20px;
+          border-radius: 8px;
+          max-width: 500px;
+          margin: 40px auto;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          color: #f0f0f0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .error {
+          color: red;
+          margin-bottom: 10px;
+        }
+        .form {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          width: 100%;
+          max-width: 400px;
+        }
+        .input-field {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #2e2e2e;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #fff; /* Set text color to white */
+}
+
+        .button {
+          padding: 10px 20px;
+          background-color: #4caf50;
+          border: none;
+          border-radius: 4px;
+          color: #fff;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+        .button:hover {
+          background-color: #43a047;
+        }
+        .poll-results {
+          background-color: #2e2e2e;
+          padding: 20px;
+          border-radius: 8px;
+          margin-top:25px;
+          width: 100%;
+          max-width: 500px;
+        }
+        .poll-question {
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 20px;
+          color: #fff;
+        }
+        .options-list {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .option-item {
+          display: flex;
+          align-items: center;
+        }
+        .option-content {
+          width: 100%;
+        }
+        .option-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 4px;
+        }
+        .option-text, .vote-count {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #e0e0e0;
+        }
+        .progress-bar-bg {
+          width: 100%;
+          background-color: #444;
+          height: 10px;
+          border-radius: 9999px;
+        }
+        .progress-bar-fill {
+          background-color: #4caf50;
+          height: 100%;
+          border-radius: 9999px;
+        }
+        .chart-container {
+          margin-top: 20px;
+          padding: 10px;
+          background-color: #333;
+          border-radius: 4px;
+        }
+      `}</style>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    backgroundColor: '#1a1a1a', // Dark background
-    padding: '20px',
-    borderRadius: '8px',
-    maxWidth: '400px',
-    margin: '40px auto',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    color: '#f0f0f0',
-    textAlign: 'center'
-  },
-  error: {
-    color: 'red',
-    marginBottom: '10px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  label: {
-    color: '#e0e0e0', // Light grey text
-    fontSize: '16px',
-  },
-  input: {
-    padding: '10px',
-    borderRadius: '4px',
-    border: '1px solid #4caf50', // Green border
-    backgroundColor: '#333', // Dark input background
-    color: '#fff',
-  },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#4caf50', // Sharp green button
-    border: 'none',
-    borderRadius: '4px',
-    color: '#fff',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-  },
-  buttonHover: {
-    backgroundColor: '#43a047',
-  },
-  resultsContainer: {
-    marginTop: '20px',
-    backgroundColor: '#2e2e2e',
-    padding: '10px',
-    borderRadius: '4px',
-  },
-  resultsText: {
-    color: '#b0ffb0', // Light greenish text for results
-    fontWeight: 'bold',
-  },
 };

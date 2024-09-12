@@ -75,7 +75,7 @@ export const Signup = () => {
     <div style={styles.background}>
       <div style={styles.container}>
         <h1 style={styles.heading}>Sign Up</h1>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
         <form style={styles.form} onSubmit={handleSubmit}>
           <label htmlFor="name" style={styles.label}>Name</label>
           <input
@@ -131,6 +131,7 @@ const styles = {
   background: {
     minHeight: '100vh', // Ensures it takes the full viewport height
     display: 'flex',
+    padding:"100px 500px",
     justifyContent: 'center', // Centers horizontally
     alignItems: 'center', // Centers vertically
     backgroundColor: '#ffffff', // Light background
@@ -138,13 +139,12 @@ const styles = {
   container: {
     maxWidth: '400px',
     width: '100%',
-    padding: '40px',
+    padding: '20px 40px 40px 40px',
     borderRadius: '12px',
     backgroundColor: '#2b2b2b',
     boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.3)',
     color: '#ffffff',
     display: 'flex',
-    marginLeft:"550px",
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -152,7 +152,7 @@ const styles = {
   },
   heading: {
     marginBottom: '24px',
-    fontSize: '32px',
+    fontSize: '48px',
     fontWeight: 'bold',
     color: '#ff9933',
   },
@@ -163,6 +163,7 @@ const styles = {
   },
   label: {
     marginBottom: '8px',
+    fontSize:'20px',
     fontWeight: 'bold',
     color: '#cccccc',
     textAlign: 'left',
