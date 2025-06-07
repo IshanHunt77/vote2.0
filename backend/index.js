@@ -20,7 +20,7 @@ app.use('/user', userRoutes);
 // Connect to MongoDB
 async function mong() {
     try {
-        await mongoose.connect('mongodb+srv://ishanproj:recum789@cluster0.pqe04.mongodb.net/Voting?retryWrites=true&w=majority');
+        await mongoose.connect('mongodb+srv://ishanraghuvanshi046:ishan61@cluster0.kffxf.mongodb.net/VoteDb?retryWrites=true&w=majority');
         console.log("MongoDB connected");
     } catch (e) {
         console.log(e);
